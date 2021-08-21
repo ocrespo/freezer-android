@@ -1,6 +1,6 @@
 
 set (Freezer_RESOURCES	${Freezer_RESOURCES}
-								${CMAKE_CURRENT_SOURCE_DIR}/resources.qrc
+								${CMAKE_CURRENT_SOURCE_DIR}/qml.qrc
 								PARENT_SCOPE) 
 
 					

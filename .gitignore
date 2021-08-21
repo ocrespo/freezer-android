@@ -1,6 +1,7 @@
-build
+build*
 Release
 Debug
 .cproject
 .project
 .settings
+CMakeLists.txt.user
