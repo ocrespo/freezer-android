@@ -1,0 +1,2 @@
+#define Freezer_VERSION_MAJOR  @Freezer_VERSION_MAJOR@
+#define Freezer_VERSION_MINOR  @Freezer_VERSION_MINOR@
