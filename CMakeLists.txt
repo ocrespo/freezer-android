@@ -37,7 +37,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(OCUtils ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/OCUtils)
+set(OCUtils ${CMAKE_CURRENT_SOURCE_DIR}/utils/OCUtils)
 include_directories(${OCUtils}/src)
 include_directories(${OCUtils}/include)
 
@@ -58,7 +58,8 @@ add_subdirectory(${PROJECT_SOURCE_DIR})
 
 set(PROJECT_SOURCES
         main.cpp
-        ${${Freezer_RESOURCES}}
+        ${Freezer_RESOURCES}
+        $<TARGET_OBJECTS:model>
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
