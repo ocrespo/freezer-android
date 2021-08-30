@@ -58,28 +58,28 @@ add_subdirectory(${PROJECT_TEST_DIR})
 
 set(PROJECT_SOURCES
         main.cpp
-        ${Freezer_RESOURCES}
+        ${Freezer_UI}
         $<TARGET_OBJECTS:model>
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(freezer-android
+    qt_add_executable(${CMAKE_PROJECT_NAME}
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
 else()
     if(ANDROID)
-        add_library(freezer-android SHARED
+        add_library(${CMAKE_PROJECT_NAME} SHARED
             ${PROJECT_SOURCES}
         )
     else()
-        add_executable(freezer-android
+        add_executable(${CMAKE_PROJECT_NAME}
           ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
-target_compile_definitions(freezer-android
+target_compile_definitions(${CMAKE_PROJECT_NAME}
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 target_link_libraries(freezer-android
   PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick)
@@ -91,8 +91,8 @@ set_target_properties(freezer-android PROPERTIES
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_import_qml_plugins(freezer-android)
-    qt_finalize_executable(freezer-android)
+    qt_import_qml_plugins(${CMAKE_PROJECT_NAME})
+    qt_finalize_executable(${CMAKE_PROJECT_NAME})
 endif()
 
 

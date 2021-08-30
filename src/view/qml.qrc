@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>ui/main.qml</file>
+        <file>ui/ItemPage.qml</file>
+        <file>ui/FreezerPage.qml</file>
     </qresource>
 </RCC>
