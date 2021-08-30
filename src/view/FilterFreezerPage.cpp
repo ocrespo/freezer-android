@@ -21,17 +21,17 @@ FilterFreezerPage::~FilterFreezerPage(){
 bool FilterFreezerPage::lessThan(const QModelIndex &source_left,
         const QModelIndex &source_right) const
 {
-    /*
-    QVariant leftData = sourceModel()->data(source_left);
-    QVariant rightData = sourceModel()->data(source_right);
+
+    QVariant leftData = sourceModel()->data(source_left,FreezerPageModel::IdRole);
+    QVariant rightData = sourceModel()->data(source_right,FreezerPageModel::IdRole);
 
     if(leftData.type() == QVariant::DateTime)
     {
         return leftData.toDateTime() < rightData.toDateTime();
     }
     else {
-        return leftData.toString() < rightData.toString();
-    }*/
+        return leftData.toInt() < rightData.toInt();
+    }
     return true;
 }
 
@@ -39,7 +39,7 @@ bool FilterFreezerPage::filterAcceptsRow(int sourceRow,
         const QModelIndex &sourceParent) const{
     bool ret(false);
     if(sourceModel() != nullptr ){
-        QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
+        QModelIndex index{sourceModel()->index(sourceRow, 0, sourceParent)};
         if(index.isValid()){
             QVariant value_role(index.data(FreezerPageModel::FreezerRole));
             if(value_role.isValid()){

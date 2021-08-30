@@ -42,11 +42,11 @@ int main(int argc, char *argv[])
     //Create filter model
     FilterFreezerPage filterModel;
     filterModel.setSourceModel(&view_model);
-    //filterModel.setSortRole(FreezerPageModel::DateRole);
+    //filterModel.setSortRole(FreezerPageModel::IdRole);
     filterModel.setDynamicSortFilter(true);
-    //filterModel.sort(0,Qt::AscendingOrder);
+    filterModel.sort(0,Qt::AscendingOrder);
 
-    filterModel.selectFreezer("Home2");
+    filterModel.selectFreezer("Home");
 
     QQmlApplicationEngine engine;
     QQmlContext* context{engine.rootContext()};
