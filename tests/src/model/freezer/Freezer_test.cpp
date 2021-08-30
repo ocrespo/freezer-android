@@ -12,7 +12,7 @@
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 
-#include <model/freezer/Freezer.h>
+#include <model/user/freezer/Freezer.h>
 #include <events/EventStore.h>
 
 
@@ -78,7 +78,7 @@ TEST_F(FreezerTest, removeItem) {
 	EXPECT_EQ(freezer.getItem(1).getName(), "B");
 	EXPECT_EQ(freezer.getItem(3).getName(), "D");
 
-	std::vector<freezer::Item> items{freezer.getItems()};
+	std::vector<freezer::SItem>&& items{freezer.getItems()};
 	EXPECT_EQ(items.size(), 2);
 	EXPECT_EQ(items[0].getId(), 1);
 	EXPECT_EQ(items[0].getName(), "B");
@@ -90,33 +90,27 @@ TEST_F(FreezerTest, removeItem) {
 TEST_F(FreezerTest, editItem) {
 	EXPECT_EQ(freezer.getItem(0).getName(), "A");
 
-	freezer.editItem(0,1,"AA","AAA");
+	EXPECT_EQ(freezer.editItem(0,1,"AA","AAA"),true);
 	EXPECT_EQ(freezer.getItem(0).getName(), "AA");
 
+    EXPECT_EQ(freezer.editItem(0,1,"AA","AAA"),false);
+    EXPECT_EQ(freezer.getItem(0).getName(), "AA");
+
+    EXPECT_EQ(freezer.editItem(0,2,"AA","AAA"),true);
+    EXPECT_EQ(freezer.getItem(0).getDrawer(), 2);
+
+    EXPECT_EQ(freezer.editItem(0,2,"AA","AAA"),false);
+
+    EXPECT_EQ(freezer.editItem(0,2,"AA","BB"),true);
+    EXPECT_EQ(freezer.getItem(0).getDescription(), "BB");
+
+    EXPECT_EQ(freezer.editItem(0,2,"AA","BB"),false);
+
+
+
+
 }
 
-TEST_F(FreezerTest, serilizationSave) {
-	//std::stringstream ss;
-    std::ofstream ofs("test.xml");
-
-	boost::archive::xml_oarchive oarch(ofs);
-	oarch << BOOST_SERIALIZATION_NVP(freezer);
-}
-TEST_F(FreezerTest, serilizationLoad) {
-
-	freezer::Freezer freezer2;
-
-	std::ifstream ifs("test.xml");
-
-	boost::archive::xml_iarchive iarch(ifs);
-	iarch >> BOOST_SERIALIZATION_NVP(freezer2);
-
-	EXPECT_EQ(freezer2.getItem(0).getName(), freezer.getItem(0).getName());
-	EXPECT_EQ(freezer2.getItem(1).getName(), freezer.getItem(1).getName());
-	EXPECT_EQ(freezer2.getItem(2).getName(), freezer.getItem(2).getName());
-	EXPECT_EQ(freezer2.getItem(3).getName(), freezer.getItem(3).getName());
-	EXPECT_EQ(freezer2.getItem(4).getName(), freezer.getItem(4).getName());
-}
 
 
 

@@ -14,145 +14,105 @@
 
 #include <events/EventUniq.h>
 
-#include "freezer/Freezer.h"
+#include "user/User.h"
 
 const std::string filename("values_freezer.xml");
 
 Model::Model() :
-	freezer(new freezer::Freezer())
+	user(std::make_unique<freezer::User>())
 {
-    load(filename);
 }
 
 Model::~Model() {
-	delete freezer;
+
 }
 
 void Model::registerItemAdded(const AddedItem_callback_t& callback){
-	addObserver(EModelEvents::AddedItem,new  ocutils::EventUniq(callback));
+    user->registerItemAdded(getObserverId(),[&](const std::string& freezer,
+            int item_id,
+            int drawer,
+            const std::string& name,
+            const std::string& description,
+            const std::chrono::time_point<std::chrono::system_clock>& date){
+        callback(freezer,
+                item_id,
+                drawer,
+                name,
+                description,
+                date);
+        notifyNextId(freezer);
+    });
 }
 
-void Model::registerItemRemoved(const Int_callback_t& callback){
-	addObserver(EModelEvents::RemovedItem,new  ocutils::EventUniq(callback));
-}
-
-void Model::registerNextId(const Int_callback_t& callback){
-	addObserver(EModelEvents::NextId,new  ocutils::EventUniq(callback));
-}
-
-void Model::registerNumDrawers(const Int_callback_t& callback){
-	addObserver(EModelEvents::NumDrawers,new  ocutils::EventUniq(callback));
-}
-
-void Model::registerItemInfo(const AddedItem_callback_t& callback){
-    addObserver(EModelEvents::ItemInfo,new  ocutils::EventUniq(callback));
+void Model::registerItemRemoved(const RemovedItem_callback_t& callback){
+    user->registerItemRemoved(getObserverId(),[&](const std::string& freezer,
+            int id){
+        callback(freezer,id);
+        notifyNextId(freezer);
+    });
 }
 
 void Model::registerItemUpdated(const UpdatedItem_callback_t& callback){
-    addObserver(EModelEvents::UpdatedItem,new  ocutils::EventUniq(callback));
+    user->registerItemUpdated(getObserverId(),callback);
+}
+
+void Model::registerNextId(const Int_callback_t& callback){
+	addObserver(EModelEvents::NextId,new ocutils::EventUniq(callback));
+}
+
+void Model::registerNumDrawers(const Int_callback_t& callback){
+	addObserver(EModelEvents::NumDrawers,new ocutils::EventUniq(callback));
+}
+
+
+void Model::registerAllItem(const AllItems_callback_t& callback){
+    addObserver(EModelEvents::AllItems,new ocutils::EventUniq(callback));
 }
 
 void Model::registerInitFinished(const Void_callback_t& callback){
-    addObserver(EModelEvents::InitFinished,new  ocutils::EventUniq(callback));
+    addObserver(EModelEvents::InitFinished,new ocutils::EventUniq(callback));
 }
 
+void Model::notifyNextId(const std::string& freezer){
+    donotify<ocutils::EventUniq,std::string,int>(EModelEvents::NextId,freezer,user->getNextId(freezer));
+}
 
-
+void Model::notifyNumDrawers(const std::string& freezer){
+    donotify<ocutils::EventUniq,std::string,int>(EModelEvents::NumDrawers,freezer,user->getNumDrawers(freezer));
+}
 
 void Model::requestInitialInfo(){
-	donotify<ocutils::EventUniq,int>(EModelEvents::NextId,freezer->getNextId());
-	donotify<ocutils::EventUniq,int>(EModelEvents::NumDrawers,freezer->getNumDrawer());
+    std::vector<freezer::SItem>&& items{user->getAllItem()};
+    donotify<ocutils::EventUniq,std::vector<freezer::SItem>>(EModelEvents::AllItems,items);
 
-	std::vector<freezer::Item> items{freezer->getItems()};
-	for(auto it{items.cbegin()}; it != items.cend(); ++it){
-		donotify<ocutils::EventUniq,
-				int,
-				int,
-				std::string,
-				std::string,
-				std::string>(EModelEvents::AddedItem,
-							it->getId(),
-							it->getDrawer(),
-							it->getName(),
-							it->getDescription(),
-							it->getStringDate());
-	}
+    std::vector<std::string>&& freezers{user->getFreezers()};
+    for(auto &it : freezers){
+        notifyNextId(it);
+        notifyNumDrawers(it);
+    }
+
     donotify<ocutils::EventUniq>(EModelEvents::InitFinished);
 }
 
-void Model::addItem(int drawer,const std::string& name, const std::string& description){
-	int ret{freezer->addItem(drawer,name,description)};
-	save(filename);
-	donotify<ocutils::EventUniq,
-			int,
-			int,
-			std::string,
-			std::string,
-			std::string>(EModelEvents::AddedItem,
-						ret,
-						drawer,
-						name,
-						description,
-						freezer->getItem(ret).getStringDate());
-    donotify<ocutils::EventUniq,int>(EModelEvents::NextId,freezer->getNextId());
-
+void Model::addItem(const std::string& freezer,
+        int drawer,
+        const std::string& name,
+        const std::string& description){
+    user->addItem(freezer, drawer, name, description);
 }
 
-void Model::modifyItem(int id, int drawer,const std::string& name, const std::string& description){
-    if(freezer->editItem(id,drawer,name,description)){
-        save(filename);
-
-        donotify<ocutils::EventUniq,
-                           int,
-                           int,
-                           std::string,
-                           std::string>(EModelEvents::UpdatedItem,
-                                       id,
-                                       drawer,
-                                       name,
-                                       description);
-    }
+void Model::modifyItem(const std::string& freezer,
+        int id,
+        int drawer,
+        const std::string& name,
+        const std::string& description){
+    user->editItem(freezer, id, drawer, name, description);
 }
 
-void Model::removeItem(int id){
-	if(freezer->removeItem(id)){
-	    save(filename);
-
-		donotify<ocutils::EventUniq,int>(EModelEvents::RemovedItem,id);
-	    donotify<ocutils::EventUniq,int>(EModelEvents::NextId,freezer->getNextId());
-	}
+void Model::removeItem(const std::string& freezer,
+        int id){
+    user->removeItem(freezer, id);
 }
 
-void Model::requestItemInfo(int id){
-    freezer::Item item(freezer->getItem(id));
-
-    donotify<ocutils::EventUniq,
-                    int,
-                    int,
-                    std::string,
-                    std::string,
-                    std::string>(EModelEvents::ItemInfo,
-                                item.getId(),
-                                item.getDrawer(),
-                                item.getName(),
-                                item.getDescription(),
-                                item.getStringDate());
-}
-
-
-void Model::save(const std::string& path){
-    /*std::ofstream file(path);
-
-    boost::archive::xml_oarchive oarch(file);
-    oarch << BOOST_SERIALIZATION_NVP(freezer);*/
-}
-
-void Model::load(const std::string& path){
-    /*std::ifstream file(path);
-    if(!file.fail()){
-        boost::archive::xml_iarchive iarch(file);
-        iarch >> BOOST_SERIALIZATION_NVP(freezer);
-    }*/
-}
 
 

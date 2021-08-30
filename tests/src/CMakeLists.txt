@@ -17,7 +17,6 @@ target_link_libraries(FreezerTest $<TARGET_OBJECTS:model>
 								${CMAKE_THREAD_LIBS_INIT} 
 								gmock
                               	gtest
-                              	${Boost_LIBRARIES}
                                	)                               	
 
 add_test(${PROJECT_NAME}  FreezerTest)

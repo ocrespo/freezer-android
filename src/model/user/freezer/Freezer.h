@@ -11,7 +11,7 @@
 #include <map>
 #include <vector>
 
-#include <boost/serialization/map.hpp>
+//#include <boost/serialization/map.hpp>
 
 #include "Item.h"
 
@@ -27,7 +27,8 @@ public:
 	inline void setNumDrawer(int drawers){num_drawer = drawers;}
 	inline int getNumDrawer()const{return num_drawer;}
 
-	int addItem(int drawer, const std::string& name, const std::string& description);
+	int addItem(SItem &&item);
+    int addItem(int drawer, const std::string& name, const std::string& description);
 
 	bool moveItem(int key, int drawer);
 
@@ -35,23 +36,15 @@ public:
 
 	bool removeItem(int key);
 
-	Item getItem(int key);
-	std::vector<Item> getItems();
+	SItem getItem(int key);
+	std::vector<SItem> getItems();
 
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive & ar, const unsigned int version){
-        //ar & boost::serialization::make_nvp("version",version);
-        ar & BOOST_SERIALIZATION_NVP(num_drawer);
-        ar & BOOST_SERIALIZATION_NVP(next_id);
-        ar & BOOST_SERIALIZATION_NVP(content);
-    }
 
 protected:
 
 	int findNextId();
 
-	std::map<int,Item> content;
+	std::map<int,SItem> content;
 	int next_id;
 
 	int num_drawer;

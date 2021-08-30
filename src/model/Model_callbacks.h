@@ -10,11 +10,14 @@
 
 #include <string>
 #include <functional>
+#include <vector>
+
+
+#include "user/freezer/Item.h"
 
 using Void_callback_t = std::function<void()>;
-using Int_callback_t = std::function<void(int)>;
-using AddedItem_callback_t = std::function<void(int,int,const std::string&, const std::string&, const std::string&)>;
-using UpdatedItem_callback_t = std::function<void(int,int,const std::string&, const std::string&)>;
+using Int_callback_t = std::function<void(const std::string&,int)>;
+using AllItems_callback_t = std::function<void(std::vector<freezer::SItem>&&)>;
 
 
 #endif /* SRC_MODEL_MODEL_CALLBACKS_H_ */

@@ -11,10 +11,8 @@
 enum class EModelEvents{
 	NextId,
 	NumDrawers,
-	AddedItem,
-	RemovedItem,
+	AllItems,
 	ItemInfo,
-	UpdatedItem,
 	InitFinished,
 
 	Max

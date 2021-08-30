@@ -49,12 +49,12 @@ set (PROJECT_INCLUDE_DIR ${PROJECT_DIR}/include)
 link_directories(${PROJECT_LIB_DIR})
 
 
-#set (PROJECT_TEST_DIR ${PROJECT_SOURCE_DIR}/tests)
+set (PROJECT_TEST_DIR ${PROJECT_SOURCE_DIR}/tests)
 set (PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 
 
 add_subdirectory(${PROJECT_SOURCE_DIR})
-#add_subdirectory(${PROJECT_TEST_DIR})
+add_subdirectory(${PROJECT_TEST_DIR})
 
 set(PROJECT_SOURCES
         main.cpp

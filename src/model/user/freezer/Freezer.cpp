@@ -20,32 +20,32 @@ Freezer::~Freezer() {
 
 }
 
-int Freezer::addItem(int drawer, const std::string& name, const std::string& description){
-	int ret{next_id};
-	content.emplace(next_id,Item(next_id,drawer,name,description));
+int Freezer::addItem(SItem &&item){
+	item.id = next_id;
+	content.emplace(next_id,item);
 	next_id = findNextId();
-
-	return ret;
+	return item.id;
 }
+
+int Freezer::addItem(int drawer, const std::string& name, const std::string& description){
+    return addItem(SItem(drawer,name,description));
+}
+
 
 bool Freezer::moveItem(int key, int drawer){
 	bool ret{false};
 	auto item{content.find(key)};
 	if(item != content.cend()){
-		item->second.setDrawer(drawer);
-		ret = true;
+	    ret = item->second.setDrawer(drawer);
 	}
 	return ret;
 }
 
-bool Freezer::editItem(int key,  int drawer, const std::string& name, const std::string& description){
+bool Freezer::editItem(int key, int drawer, const std::string& name, const std::string& description){
 	bool ret{false};
 	auto item{content.find(key)};
 	if(item != content.cend()){
-		item->second.setName(name);
-		item->second.setDescription(description);
-        item->second.setDrawer(drawer);
-		ret = true;
+	    ret = item->second.updateItem(drawer, name, description);
 	}
 	return ret;
 }
@@ -56,12 +56,12 @@ bool Freezer::removeItem(int key){
 	return ret;
 }
 
-Item Freezer::getItem(int key){
+SItem Freezer::getItem(int key){
 	return content.find(key)->second;
 }
 
-std::vector<Item> Freezer::getItems(){
-	std::vector<Item> items;
+std::vector<SItem> Freezer::getItems(){
+	std::vector<SItem> items;
 	for(auto it = content.cbegin(); it != content.cend(); ++it){
 		items.push_back(it->second);
 	}
