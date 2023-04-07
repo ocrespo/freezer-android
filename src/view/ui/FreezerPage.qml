@@ -4,13 +4,13 @@ import QtQuick.Controls 2.5
 Page {
     id: root
 
-    header: ToolBar {
+    /*header: ToolBar {
         Label {
             text: qsTr("Freezer")
             font.pixelSize: 20
             anchors.centerIn: parent
         }
-    }
+    }*/
 
     ListView {
         id: listView
@@ -29,3 +29,9 @@ Page {
         }
     }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

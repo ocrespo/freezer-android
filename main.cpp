@@ -55,14 +55,19 @@ int main(int argc, char *argv[])
     context->setContextProperty("filterFreezerModel", &filterModel);
 
     const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-                     &app, [url](QObject *obj, const QUrl &objUrl) {
-        if (!obj && url == objUrl)
-            QCoreApplication::exit(-1);
-    }, Qt::QueuedConnection);
+    QObject::connect(&engine,
+                    &QQmlApplicationEngine::objectCreated,
+                     &app,
+                     [url](QObject *obj, const QUrl &objUrl) {
+                        if (!obj && url == objUrl){
+                            QCoreApplication::exit(-1);
+                        }
+                     },
+                     Qt::QueuedConnection);
     engine.load(url);
 
     view_model.addItem({"Home2", 0 ,1, "ItemParty", ""});
+    //filterModel.selectFreezer("Home2");
 
 
     return app.exec();
